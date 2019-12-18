@@ -5,7 +5,10 @@
 {% endblock %}
 
 {% block body %}
-
+	<h1> Welcome {{ user.first_name }}</h1>
+	<div class="logout-btn">
+		<a href="{% url 'logout' %}">LogOut</a>
+	</div>
 	<h2>Menu</h2>
 	<h3>Regular Pizza</h3>
 	<div class="row">
