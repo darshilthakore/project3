@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 
-from .models import RegularPizza, SicilianPizza, Topping
+from .models import RegularPizza, SicilianPizza, Topping, Cart
 # Create your views here.
 
 def index(request):
@@ -16,6 +16,7 @@ def index(request):
 		"regularpizzas": RegularPizza.objects.all(),
 		"sicilianpizzas": SicilianPizza.objects.all(),
 		"toppings": Topping.objects.all()
+
 
 	}
 	return render(request, "orders/menu.html", context)
@@ -50,17 +51,28 @@ def register_view(request):
 
 def menu(request):
 	context = {
+		"user": request.user,
 		"regularpizzas": RegularPizza.objects.all(),
 		"sicilianpizzas": SicilianPizza.objects.all(),
-		"toppings": Topping.objects.all()
+		"toppings": Topping.objects.all(),
+		"cart": Cart.objects.get(user=request.user.first_name)		
 	}
 
 	return render(request, "orders/menu.html", context)
 
 
-def add_to_cart(request):
+def cart(request, regularpizza_id):
 	if request.method == "POST":
 		size = request.POST['size']
-		toppings = request.POST['toppings']
-		
-
+		print(f"pizza size is {size}")
+		topping_id = request.POST.getlist('toppings')
+		print(f"topping is : {topping_id}")
+		pizza = RegularPizza.objects.get(pk=regularpizza_id)
+		print(f"pizza is : {pizza.name}")
+		for t in topping_id:
+			topping = Topping.objects.get(pk=int(t))
+			pizza.toppings.add(topping)
+		item = Cart(user=request.user.first_name, item_name=pizza.name, item_price=size)
+		print(f"{item}")
+		item.save()
+		return HttpResponseRedirect(reverse("menu"))

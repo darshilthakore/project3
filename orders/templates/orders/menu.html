@@ -18,7 +18,7 @@
 		<div class="column">Order</div>
 	</div>
 	{% for regularpizza in regularpizzas %}
-		<form id="{{ regularpizza.name }}" action="{% url 'add_to_cart' regularpizza.id %}" method="post">
+		<form action="{% url 'cart' regularpizza.id %}" method="post">
 			{% csrf_token %}
 			<div class="row">
 				<div class="column">{{ regularpizza.name }}</div>
@@ -32,12 +32,12 @@
 					
 					<select name="toppings" size="2" multiple>
 						{% for topping in toppings %}
-							<option>{{topping.topping}} : ${{topping.rate }}</option>
+							<option value="{{ topping.id }}">{{topping.topping}} : ${{topping.rate }}</option>
 						{% endfor %}
 					</select>
 					
 				</div>
-				<div class="column"><button>Add to cart</button></div>
+				<div class="column"><input type="submit" value="Add to cart"/></div>
 				
 			</div>
 		</form>
@@ -50,7 +50,7 @@
 		<div class="column">Order</div>
 	</div>
 	{% for sicilianpizza in sicilianpizzas %}
-		<form id="{{ sicilianpizza.name }}" action="{% url 'add_to_cart' sicilianpizza.id %}" method="post">
+		<form action="{% url 'cart' sicilianpizza.id %}" method="post">
 			{% csrf_token %}
 			<div class="row">
 				<div class="column">{{ sicilianpizza.name }}</div>
@@ -69,13 +69,25 @@
 					</select>
 					
 				</div>
-				<div class="column"><button>Add to cart</button></div>
+				<div class="column"><input type="submit" value="Add to cart"></div>
 				
 			</div>
 		</form>
 	{% endfor %}
 	<div class="cart">
 		<h2 align="center">Your Cart</h2>
+		{% if cart %}
+			<div><p>Pizza: {{ cart.item_name }}</p></div>
+			<div><p>Price: {{ cart.item_price }}</p></div>
+			<div>
+				{% for toppings in cart.item_name.toppings%}
+					cart.item_price += toppings.rate
+				{% endfor %}
+				<p>Subtotal = {{ cart.item_price }}</p>
+			</div>
+		{% else %}
+			<div>Empty Cart</div>
+		{% endif %}
 	</div>
 
 {% endblock %}

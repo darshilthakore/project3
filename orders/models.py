@@ -30,6 +30,11 @@ class SicilianPizza(models.Model):
 
 
 class Cart(models.Model):
+	user = models.CharField(max_length=64)
 	item_name = models.CharField(max_length=64)
 	item_price = models.FloatField()
-	item_quantity = models.IntegerField()
+	# item_quantity = models.IntegerField(blank=True)
+	# sub_total = models.FloatField(blank=True)
+
+	def __str__(self):
+		return f"{self.user} ordered {self.item_name} costing ${self.item_price}"
