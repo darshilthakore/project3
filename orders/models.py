@@ -27,3 +27,9 @@ class SicilianPizza(models.Model):
 
 	def __str__(self):
 		return f"Pizza - {self.name} | Small - $ {self.price_small} | Large - ${self.price_large}"
+
+
+class Cart(models.Model):
+	item_name = models.CharField(max_length=64)
+	item_price = models.FloatField()
+	item_quantity = models.IntegerField()

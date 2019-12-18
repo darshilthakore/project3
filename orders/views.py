@@ -56,3 +56,11 @@ def menu(request):
 	}
 
 	return render(request, "orders/menu.html", context)
+
+
+def add_to_cart(request):
+	if request.method == "POST":
+		size = request.POST['size']
+		toppings = request.POST['toppings']
+		
+

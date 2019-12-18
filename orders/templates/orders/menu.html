@@ -1,7 +1,7 @@
 {% extends "orders/base.html" %}
 
 {% block title %}
-	Pinochio's Pizza & Subs : Menu
+	Pinochio's Pizza & Subs : Menu | {{ user.first_name }}
 {% endblock %}
 
 {% block body %}
@@ -18,13 +18,14 @@
 		<div class="column">Order</div>
 	</div>
 	{% for regularpizza in regularpizzas %}
-		<form id="{{ regularpizza.name }}">
+		<form id="{{ regularpizza.name }}" action="{% url 'add_to_cart' regularpizza.id %}" method="post">
+			{% csrf_token %}
 			<div class="row">
 				<div class="column">{{ regularpizza.name }}</div>
 				<div class="column">
-					<select form="{{ regularpizza.name }}">
-						<option>Small : ${{ regularpizza.price_small }}</option>
-						<option>Large : ${{ regularpizza.price_large }}</option>						
+					<select name="size">
+						<option value="{{ regularpizza.price_small }}">Small : ${{ regularpizza.price_small }}</option>
+						<option value="{{ regularpizza.price_large }}">Large : ${{ regularpizza.price_large }}</option>						
 					</select>
 				</div>
 				<div class="column">
@@ -49,13 +50,14 @@
 		<div class="column">Order</div>
 	</div>
 	{% for sicilianpizza in sicilianpizzas %}
-		<form id="{{ sicilianpizza.name }}">
+		<form id="{{ sicilianpizza.name }}" action="{% url 'add_to_cart' sicilianpizza.id %}" method="post">
+			{% csrf_token %}
 			<div class="row">
 				<div class="column">{{ sicilianpizza.name }}</div>
 				<div class="column">
-					<select form="{{ sicilianpizza.name }}">
-						<option>Small : ${{ sicilianpizza.price_small }}</option>
-						<option>Large : ${{ sicilianpizza.price_large }}</option>						
+					<select name="size">
+						<option value="{{ sicilianpizza.price_small }}">Small : ${{ sicilianpizza.price_small }}</option>
+						<option value="{{ sicilianpizza.price_large }}">Large : ${{ sicilianpizza.price_large }}</option>						
 					</select>
 				</div>
 				<div class="column">
