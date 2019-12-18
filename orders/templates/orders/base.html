@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<style>
+			.column {
+				float: left;
+				padding: 10px;
+				width: 170px;
+			}
+			.row {
+				content: "";
+				display: table;
+				clear: both;
+			}
+		</style>
+	</head>
+	<body>
+		{% block body %}
+		{% endblock %}
+
+	</body>
+</html>

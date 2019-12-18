@@ -1,0 +1,42 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+	Pinochio's Pizza & Subs : Menu
+{% endblock %}
+
+{% block body %}
+
+	<h2>Menu</h2>
+	<h3>Regular Pizza</h3>
+	<div class="row">
+		<div class="column">Pizza</div>
+		<div class="column">Size</div>
+		<div class="column">Extra Toppings</div>
+		<div class="column">Order</div>
+	</div>
+	{% for regularpizza in regularpizzas %}
+		<form id="{{ regularpizza.name }}">
+			<div class="row">
+				<div class="column">{{ regularpizza.name }}</div>
+				<div class="column">
+					<select form="{{ regularpizza.name }}">
+						<option>Small : ${{ regularpizza.price_small }}</option>
+						<option>Large : ${{ regularpizza.price_large }}</option>						
+					</select>
+				</div>
+				<div class="column">
+					
+					<select name="toppings" size="2" multiple>
+						{% for topping in toppings %}
+							<option>{{topping.topping}} : ${{topping.rate }}</option>
+						{% endfor %}
+					</select>
+					
+				</div>
+				<div class="column"><button>Add to cart</button></div>
+				
+			</div>
+		</form>
+	{% endfor %}
+
+{% endblock %}
