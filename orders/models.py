@@ -33,6 +33,8 @@ class Cart(models.Model):
 	user = models.CharField(max_length=64)
 	item_name = models.CharField(max_length=64)
 	item_price = models.FloatField()
+	extra_toppings = models.ManyToManyField(Topping, blank=True, related_name="cart")
+	grand_total = models.FloatField(default=0)
 	# item_quantity = models.IntegerField(blank=True)
 	# sub_total = models.FloatField(blank=True)
 

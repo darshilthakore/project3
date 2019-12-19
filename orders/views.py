@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.exceptions import ObjectDoesNotExist
 
 
 from .models import RegularPizza, SicilianPizza, Topping, Cart
@@ -11,15 +12,35 @@ from .models import RegularPizza, SicilianPizza, Topping, Cart
 def index(request):
 	if not request.user.is_authenticated:
 		return render(request, "orders/login.html", {"message": None})
-	context = {
-		"user": request.user,
-		"regularpizzas": RegularPizza.objects.all(),
-		"sicilianpizzas": SicilianPizza.objects.all(),
-		"toppings": Topping.objects.all()
+	fname = request.user.first_name
+	print(f"User is: {fname}")
+	try:
+		cart = Cart.objects.get(user=fname)
+		print(f"cart is : {cart}")
+		
+		print("this is try part")
+		
+	except (TypeError, ObjectDoesNotExist) as e:
+		print("except begins")
+		context = {
+			"user": request.user,
+			"regularpizzas": RegularPizza.objects.all(),
+			"sicilianpizzas": SicilianPizza.objects.all(),
+			"toppings": Topping.objects.all(),
+			#"cart": Cart.objects.get(user=fname)
+		}
+		return render(request, "orders/menu.html", context)
+	else:
+		print("no exceptions")
+		context = {
+			"user": request.user,
+			"regularpizzas": RegularPizza.objects.all(),
+			"sicilianpizzas": SicilianPizza.objects.all(),
+			"toppings": Topping.objects.all(),
+			"cart": cart.definitions.all()
+		}
+		return render(request, "orders/menu.html", context)
 
-
-	}
-	return render(request, "orders/menu.html", context)
 
 def login_view(request):
 	username = request.POST["username"]
@@ -63,16 +84,25 @@ def menu(request):
 
 def cart(request, regularpizza_id):
 	if request.method == "POST":
-		size = request.POST['size']
-		print(f"pizza size is {size}")
+		pizza_price = request.POST['size']
+		print(f"Baze pizza price is {pizza_price}")
 		topping_id = request.POST.getlist('toppings')
 		print(f"topping is : {topping_id}")
 		pizza = RegularPizza.objects.get(pk=regularpizza_id)
 		print(f"pizza is : {pizza.name}")
+
+		total_cost = float(pizza_price)
+		print(f"total cost is {total_cost}")
+		for t in topping_id:
+			total_cost = total_cost + float(Topping.objects.get(pk=int(t)).rate)
+			print(f"total cost in loop is : {total_cost}")
+
+		item = Cart(user=request.user.first_name, item_name=pizza.name, item_price=pizza_price, grand_total=total_cost)
+		item.save()
 		for t in topping_id:
 			topping = Topping.objects.get(pk=int(t))
-			pizza.toppings.add(topping)
-		item = Cart(user=request.user.first_name, item_name=pizza.name, item_price=size)
-		print(f"{item}")
-		item.save()
-		return HttpResponseRedirect(reverse("menu"))
+			item.extra_toppings.add(topping)
+
+		print(f"Cart is {item}")
+		
+		return HttpResponseRedirect(reverse("index"))

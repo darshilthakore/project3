@@ -77,14 +77,17 @@
 	<div class="cart">
 		<h2 align="center">Your Cart</h2>
 		{% if cart %}
-			<div><p>Pizza: {{ cart.item_name }}</p></div>
-			<div><p>Price: {{ cart.item_price }}</p></div>
-			<div>
-				{% for toppings in cart.item_name.toppings%}
-					cart.item_price += toppings.rate
-				{% endfor %}
-				<p>Subtotal = {{ cart.item_price }}</p>
-			</div>
+			
+				<div><p>Pizza: {{ cart.item_name }} | Base Price: ${{ cart.item_price }} </p></div>
+				<div>
+					{% for tid in cart.extra_toppings %}
+						<p> Topping : {{ tid.name }} | Extra charge : ${{ tid.rate }}<p>
+					{% empty %}
+						<p> No toppings. </p>
+					{% endfor %}
+				</div>
+
+			<div> Total costs: ${{ cart.grand_total }}</div>
 		{% else %}
 			<div>Empty Cart</div>
 		{% endif %}
