@@ -76,20 +76,26 @@
 	{% endfor %}
 	<div class="cart">
 		<h2 align="center">Your Cart</h2>
-		{% if cart %}
-			
-				<div><p>Pizza: {{ cart.item_name }} | Base Price: ${{ cart.item_price }} </p></div>
+		{% if user_cart %}
+				{% for c in user_cart %}
+				<div><p><b>Pizza: {{ c.item_name }} | Base Price: ${{ c.item_price }}</b></p></div>
 				<div>
-					{% for tid in cart.extra_toppings %}
-						<p> Topping : {{ tid.name }} | Extra charge : ${{ tid.rate }}<p>
-					{% empty %}
-						<p> No toppings. </p>
-					{% endfor %}
+					<ul>
+						{% for topping in c.extra_toppings.all %}
+							<li><p> Topping : {{ topping.topping }} | Extra charge : ${{ topping.rate }}<p></li>
+						{% empty %}
+							<p> No toppings. </p>
+						{% endfor %}
+					</ul>
 				</div>
-
-			<div> Total costs: ${{ cart.grand_total }}</div>
+				{% endfor %}
+			<div><b>Total costs: ${{ total }}</b></div>
+			<form action="" method="post">
+				{% csrf_token %}
+				<input id="order-btn" type="submit" value="Order">
+			</form>
 		{% else %}
-			<div>Empty Cart</div>
+			<div><b>Empty Cart</b></div>
 		{% endif %}
 	</div>
 

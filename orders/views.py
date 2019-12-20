@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,32 +14,61 @@ def index(request):
 		return render(request, "orders/login.html", {"message": None})
 	fname = request.user.first_name
 	print(f"User is: {fname}")
-	try:
-		cart = Cart.objects.get(user=fname)
-		print(f"cart is : {cart}")
+	cart = Cart.objects.filter(user=fname)
+	print(f"cart is this: {cart}")
+	#add_topping = []
+	user_cart = []
+	total = 0
+	for c in cart:
+		user_cart.append(c)
+		total += c.grand_total
+		# for t in c.extra_toppings.all():
+		# 	add_topping.append(t)
+	# print(add_topping)
+	print(user_cart)
+	context = {
+		"user": request.user,
+		"regularpizzas": RegularPizza.objects.all(),
+		"sicilianpizzas": SicilianPizza.objects.all(),
+		"toppings": Topping.objects.all(),
+		"user_cart": user_cart,
+		# "add_topping": add_topping,
+		"total": total,
+	}
+	return render(request, "orders/menu.html", context)
+	# cart = Cart.objects.filter(user=fname)
+	# try:
+	# 	cart = Cart.objects.filter(user=fname)
+	# 	print(f"cart is : {cart}")
+	# 	add_topping = []
+	# 	for c in cart:
+	# 		for t in c.extra_toppings.all():
+	# 			add_topping.append(t)
+	# 	print("this is try part")
+	# 	print("no exceptions")
+	# 	context = {
+	# 		"user": request.user,
+	# 		"regularpizzas": RegularPizza.objects.all(),
+	# 		"sicilianpizzas": SicilianPizza.objects.all(),
+	# 		"toppings": Topping.objects.all(),
+	# 		"cart": cart,
+	# 		"add_topping": add_topping,
+	# 	}
+	# 	print("try part over")
+	# 	return render(request, "orders/menu.html", context)
+
 		
-		print("this is try part")
-		
-	except (TypeError, ObjectDoesNotExist) as e:
-		print("except begins")
-		context = {
-			"user": request.user,
-			"regularpizzas": RegularPizza.objects.all(),
-			"sicilianpizzas": SicilianPizza.objects.all(),
-			"toppings": Topping.objects.all(),
-			#"cart": Cart.objects.get(user=fname)
-		}
-		return render(request, "orders/menu.html", context)
-	else:
-		print("no exceptions")
-		context = {
-			"user": request.user,
-			"regularpizzas": RegularPizza.objects.all(),
-			"sicilianpizzas": SicilianPizza.objects.all(),
-			"toppings": Topping.objects.all(),
-			"cart": cart.definitions.all()
-		}
-		return render(request, "orders/menu.html", context)
+	# except (TypeError, ObjectDoesNotExist) as e:
+	# 	print("except begins")
+	# 	context = {
+	# 		"user": request.user,
+	# 		"regularpizzas": RegularPizza.objects.all(),
+	# 		"sicilianpizzas": SicilianPizza.objects.all(),
+	# 		"toppings": Topping.objects.all(),
+	# 		"cart": Cart.objects.get(user=fname)
+	# 	}
+	# 	print("except over")
+	# 	return render(request, "orders/menu.html", context)
 
 
 def login_view(request):
@@ -71,12 +100,18 @@ def register_view(request):
 	return HttpResponseRedirect(reverse("index"))
 
 def menu(request):
+	cart = Cart.objects.filter(user=request.user.first_name)
+	add_topping = []
+	for c in cart:
+		for t in cart.extra_toppings.all():
+			add_topping.append(t)
 	context = {
 		"user": request.user,
 		"regularpizzas": RegularPizza.objects.all(),
 		"sicilianpizzas": SicilianPizza.objects.all(),
 		"toppings": Topping.objects.all(),
-		"cart": Cart.objects.get(user=request.user.first_name)		
+		"cart": cart,
+		"add_topping": add_topping		
 	}
 
 	return render(request, "orders/menu.html", context)
